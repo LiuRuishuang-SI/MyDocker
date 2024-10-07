@@ -1,6 +1,11 @@
 FROM ubuntu:18.04
+
 LABEL maintainer="LiuRuishuang <https://github.com/LiuRuishuang-SI/>"
 
+# Set environment variables for non-interactive installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install dependencies
 RUN apt update && apt install -y \
         vim \
         zip unzip wget git \
@@ -10,16 +15,33 @@ RUN apt update && apt install -y \
         libglew-dev \
         libssl-dev \
         libboost-all-dev \
-        libgtk2.0-dev
+        libgtk2.0-dev \
+        curl \
+        gnupg2 \
+        lsb-release \
+        build-essential
 
-# ARG CMAKE_INSTALL_PREFIX=/usr/local
+# Install ROS Melodic
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && \
+    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+RUN apt update && apt install -y \
+    ros-melodic-desktop-full \
+    python-rosdep
+
+# Initialize rosdep
+RUN rosdep init && \
+    rosdep update
+
+# Setup environment
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+SHELL ["/bin/bash", "-c"]
+RUN source /opt/ros/melodic/setup.bash
+
+# Install ROS dependencies for building packages
+RUN apt install -y python-rosinstall python-rosinstall-generator python-wstool build-essential
+
+# Set the number of threads for parallel builds
 ARG NUM_THREADS=2
-
-# ENV CPATH=${CMAKE_INSTALL_PREFIX}/include:${CPATH}
-# ENV C_INCLUDE_PATH=${CMAKE_INSTALL_PREFIX}/include:${C_INCLUDE_PATH}
-# ENV CPLUS_INCLUDE_PATH=${CMAKE_INSTALL_PREFIX}/include:${CPLUS_INCLUDE_PATH}
-# ENV LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${LIBRARY_PATH}
-# ENV LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}
 
 # OpenCV
 ARG OPENCV_VERSION=4.4.0
@@ -33,7 +55,6 @@ RUN set -x && \
   cd build && \
   cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    # -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
     -DBUILD_DOCS=OFF \
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_JASPER=OFF \
@@ -68,7 +89,6 @@ RUN set -x && \
   cd build && \
   cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    # -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_PANGOLIN_DEPTHSENSE=OFF \
     -DBUILD_PANGOLIN_FFMPEG=OFF \
@@ -98,6 +118,7 @@ RUN set -x && \
   cd /tmp && \
   rm -rf *
 
-RUN git clone https://github.com/UZ-SLAMLab/ORB_SLAM3.git ORB_SLAM3 && \
+# ORB-SLAM3
+RUN git clone https://github.com/LiuRuishuang-SI/ORB_SLAM3.git ORB_SLAM3 && \
   cd ORB_SLAM3 && \
-  ./build.sh    
+  ./build.sh
