@@ -25,7 +25,9 @@ RUN apt update && apt install -y \
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && \
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
 RUN apt update && apt install -y \
-    ros-noetic-desktop \
+    ros-noetic-ros-base \
+    ros-noetic-rviz \
+    ros-noetic-cv-bridge \
     python3-rosdep
 
 # Initialize rosdep
@@ -137,3 +139,5 @@ RUN mkdir -p catkin_ws/src && \
 
 WORKDIR /tmp/catkin_ws
 RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build && source devel/setup.bash"
+
+WORKDIR /tmp

@@ -28,7 +28,9 @@ RUN apt update && apt install -y \
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
   && sh -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null'
 RUN apt update && apt install -y \
-    ros-iron-desktop
+    ros-iron-ros-base \
+    ros-iron-rviz2 \
+    ros-iron-cv-bridge
 
 # Source ROS 2 setup
 RUN echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
@@ -124,3 +126,4 @@ RUN set -x && \
 RUN git clone https://github.com/LiuRuishuang-SI/ORB_SLAM3.git ORB_SLAM3 && \
   cd ORB_SLAM3 && \
   ./build.sh
+WORKDIR /tmp/ORB_SLAM3
