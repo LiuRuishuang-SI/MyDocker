@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     python-is-python3 \
     ros-noetic-catkin \
+    ros-noetic-rviz \ 
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /home/dev_ws/src
