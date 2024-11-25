@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     ros-humble-launch \
     ros-humble-launch-ros \
     ros-humble-rviz2 \
+    libogre-1.12-dev \
     ros-humble-cv-bridge \
     && rm -rf /var/lib/apt/lists/*
 

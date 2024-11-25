@@ -11,7 +11,9 @@ sudo docker build -t ros-humble-tcp-endpoint .
 
 ### Run the Docker Container
 
-1. Set permission for x server
+#### Ubuntu
+
+1. Set permission for x server:
 
     ```bash
     xhost +
@@ -23,7 +25,21 @@ sudo docker build -t ros-humble-tcp-endpoint .
     docker run -it --rm --name ros-humble-tcp-endpoint \
         -p 10000:10000 ros-humble-tcp-endpoint \
         -e DISPLAY=$DISPLAY \
-        -v /tmp/.X11-unix/:/tmp/.X11-unix
+        -v /tmp/.X11-unix/:/tmp/.X11-unix \
+        ros-humble-tcp-endpoint
+    ```
+
+#### Windows
+1. Download and install an X server (VcXsrv).
+
+2. Run the Docker container from the image you just built. Map the port that the ROS TCP Endpoint will use. In this example, we'll use port `10000`:
+
+    ```bash
+    docker run -it --rm --name ros-humble-tcp-endpoint \
+        -p 10000:10000 \
+        -e DISPLAY=host.docker.internal:0 \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        ros-humble-tcp-endpoint
     ```
 
 ### Access the Running Container
