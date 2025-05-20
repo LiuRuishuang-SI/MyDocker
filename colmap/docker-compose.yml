@@ -1,0 +1,15 @@
+services:
+  colmap:
+    build: . 
+    image: colmap/colmap:latest
+    runtime: nvidia
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./datasets:/datasets:ro
+      - ./workspace:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
